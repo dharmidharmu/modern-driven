@@ -73,9 +73,8 @@ jobs:
     - name: Import solution to prod env
       uses: microsoft/powerplatform-actions/import-solution@v0
       with:
-        environment-url: 'https://dharmicrm2-prod.crm8.dynamics.com/'
+        environment-url: 'https://dharmicrm2-prod.crm8.dynamics.com'
         user-name: 'dharmicrm2@dharmicrm2.onmicrosoft.com'
-        timeout-minutes: 360
         password-secret: ${{ secrets.password }}
         solution-file: out/release/gitaction.zip
         force-overwrite: true
