@@ -23,11 +23,7 @@ on:
        description: 'folder name to be created and checked in *do not change*'
        required: true
        default: solutions/
-      select:
-        type: input.checkbox
-        label: Enabled
-        description: Globally enable to the particles.
-        default: true
+     
 
 env:
 #edit your values here
