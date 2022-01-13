@@ -9,13 +9,12 @@ env:
   CUSTOMIZATION: gitaction
   TABLES: connectionref
 
+
 jobs:
   WhoAmI:
     runs-on: windows-latest
     env:
-      RUNNER_DEBUG: 1 
- 
-   
+      RUNNER_DEBUG: 1
     steps:
       #checkout git repo
       - uses: actions/checkout@v2
@@ -36,20 +35,18 @@ jobs:
           app-id: ${{ secrets.APPID }}
           client-secret: ${{ secrets.CLIENT_SECRET }}
           tenant-id: ${{ secrets.TENANT_ID }}
-
+  #Export Solutions from Dev Environment
   ExportFromDev:
     runs-on: windows-latest
     needs: [WhoAmI]
     env:
-      RUNNER_DEBUG: 1 
-
-  
+      RUNNER_DEBUG: 1
     strategy:
       matrix: 
         solution: 
-          - ${{CUSTOMIZATION}}
-          - ${{TABLES}}
-         
+          - gitaction
+          - connectionref
+    
     steps:
       - name: Export solution 
         uses: microsoft/powerplatform-actions/export-solution@v0
@@ -74,34 +71,39 @@ jobs:
         with:
           name: ${{matrix.solution}}-managedSolution
           path: out/export/${{matrix.solution}}.zip
+  #Import Solutions to QA Envirnoment
   ImportToQA:
     needs: [ExportFromDev]
     runs-on: windows-latest
-    env:
-      RUNNER_DEBUG: 1
- 
-    strategy:
-      matrix: 
-        solution: 
-          - ${{CUSTOMIZATION}}
-          - ${{TABLES}}
-
     steps:
-    - uses: actions/checkout@v2
-      with:
-        lfs: true
-    - name: Fetch the ready to ship solution from GH artifact store
+    - name: Fetch the ready to ship solution ${{env.CUSTOMIZATION}} from GH artifact store
       uses: actions/download-artifact@v2
       with:
-        name: ${{matrix.solution}}-managedSolution
+        name: ${{env.CUSTOMIZATION}}-managedSolution
         path: out/release/
-    - name: Import Solution to QA Environment
+    - name: Import ${{env.CUSTOMIZATION}} Solution to QA Environment
       uses: microsoft/powerplatform-actions/import-solution@v0
       with:
         environment-url: ${{ secrets.E2EQA }}
         app-id: ${{ secrets.APPID }}
         client-secret: ${{ secrets.CLIENT_SECRET }}
         tenant-id: ${{ secrets.TENANT_ID }}
-        solution-file: out/release/${{matrix.solution}}.zip
+        solution-file: out/release/${{env.CUSTOMIZATION}}.zip
         force-overwrite: true
         publish-changes: true
+    - name: Fetch the ready to ship solution ${{env.TABLES}} from GH artifact store
+      uses: actions/download-artifact@v2
+      with:
+        name: ${{env.TABLES}}-managedSolution
+        path: out/release/
+    - name: Import ${{env.TABLES}}  Solution to QA Environment
+      uses: microsoft/powerplatform-actions/import-solution@v0
+      with:
+        environment-url: ${{ secrets.E2EQA }}
+        app-id: ${{ secrets.APPID }}
+        client-secret: ${{ secrets.CLIENT_SECRET }}
+        tenant-id: ${{ secrets.TENANT_ID }}
+        solution-file: out/release/${{env.TABLES}}.zip
+        force-overwrite: true
+        publish-changes: true
+   
