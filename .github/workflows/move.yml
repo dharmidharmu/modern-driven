@@ -34,13 +34,13 @@ jobs:
 
   ExportFromDev:
     runs-on: windows-latest
-    needs: [ExportFromDev]
+    needs: [WhoAmI]
     env:
       RUNNER_DEBUG: 1 
   
     strategy:
       matrix: 
-        solution: [${{env.CUSTOMIZATION}},${{env.TABLES}}]
+        solution: ["${{env.CUSTOMIZATION}}","${{env.TABLES}}"]
     steps:
       - name: Publish Solution 
         uses: microsoft/powerplatform-actions/publish-solution@v0
