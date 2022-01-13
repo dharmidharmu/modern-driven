@@ -46,7 +46,7 @@ jobs:
   
     strategy:
       matrix:
-        solution: [gitaction,connectionref]
+        solution: ["${{env.CUSTOMIZATION}}","${{env.TABLES}}"]
          
     steps:
       - name: Export solution 
