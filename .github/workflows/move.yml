@@ -6,7 +6,8 @@ on: workflow_dispatch
 
 #Solution Names to be exported From Dev Environment
 env:
-  solutions: "[gitaction,connectionref]"
+  CUSTOMIZATION: gitaction
+  TABLES: connectionref
 
 jobs:
   WhoAmI:
@@ -44,8 +45,9 @@ jobs:
 
   
     strategy:
-      matrix: 
-        solution: ${{env.solutions}}
+      matrix:
+        solution: ['${{self:env.CUSTOMIZATION}}','${{self:env.TABLES}}']
+         
     steps:
       - name: Export solution 
         uses: microsoft/powerplatform-actions/export-solution@v0
@@ -78,7 +80,7 @@ jobs:
  
     strategy:
       matrix: 
-        solution: ["${CUSTOMIZATION}","${TABLES}"]
+        solution: ['${{self:env.CUSTOMIZATION}}','${{self:env.TABLES}}']
 
     steps:
     - uses: actions/checkout@v2
