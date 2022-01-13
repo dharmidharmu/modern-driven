@@ -95,7 +95,7 @@ jobs:
       with:
         name: ${{env.TABLES}}-managedSolution
         path: out/release/
-    - name: Import ${{env.TABLES}}  Solution to QA Environment
+    - name: Import ${{env.TABLES}} Solution to QA Environment
       uses: microsoft/powerplatform-actions/import-solution@v0
       with:
         environment-url: ${{ secrets.E2EQA }}
