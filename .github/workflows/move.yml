@@ -91,14 +91,6 @@ jobs:
       with:
         name: ${{matrix.solution}}-managedSolution
         path: out/release/
-    - name: Backup QA Environment
-      uses: microsoft/powerplatform-actions/backup-environment@v0
-      with:
-        environment-url: ${{ secrets.E2EQA }}
-        app-id: ${{ secrets.APPID }}
-        client-secret: ${{ secrets.CLIENT_SECRET }}
-        tenant-id: ${{ secrets.TENANT_ID }}
-        backup-label: Backup_before_deploy_GitAction
     - name: Import Solution to QA Environment
       uses: microsoft/powerplatform-actions/import-solution@v0
       with:
