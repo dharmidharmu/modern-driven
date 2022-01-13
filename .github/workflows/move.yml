@@ -56,7 +56,6 @@ jobs:
           client-secret: ${{ secrets.CLIENT_SECRET }}
           tenant-id: ${{ secrets.TENANT_ID }}
           solution-name: ${{matrix.solution}}
-          managed: true
           solution-output-file: out/export/${{matrix.solution}}.zip
       - name: Check Solution
         uses: microsoft/powerplatform-actions/check-solution@v0
