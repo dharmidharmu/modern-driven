@@ -8,13 +8,15 @@ on: workflow_dispatch
 env:
   CUSTOMIZATION: gitaction
   TABLES: connectionref
-  RUNNER_DEBUG: 1
+
   
 
 
 jobs:
   WhoAmI:
     runs-on: windows-latest
+    env:
+      RUNNER_DEBUG: 1 
    
     steps:
       #checkout git repo
@@ -32,10 +34,13 @@ jobs:
 
   ExportFromDev:
     runs-on: windows-latest
+    needs: [ExportFromDev]
+    env:
+      RUNNER_DEBUG: 1 
   
     strategy:
       matrix: 
-        solution: ["${{env.CUSTOMIZATION}}","${{env.TABLES}}"]
+        solution: [${{env.CUSTOMIZATION}},${{env.TABLES}}]
     steps:
       - name: Publish Solution 
         uses: microsoft/powerplatform-actions/publish-solution@v0
@@ -70,6 +75,8 @@ jobs:
   ImportToQA:
     needs: [ExportFromDev]
     runs-on: windows-latest
+    env:
+      RUNNER_DEBUG: 1
  
     strategy:
       matrix: 
