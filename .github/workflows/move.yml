@@ -14,8 +14,7 @@ jobs:
     runs-on: windows-latest
     env:
       RUNNER_DEBUG: 1 
-      CUSTOMIZATION: gitaction
-      TABLES: connectionref
+ 
    
     steps:
       #checkout git repo
@@ -36,8 +35,7 @@ jobs:
     needs: [WhoAmI]
     env:
       RUNNER_DEBUG: 1 
-      CUSTOMIZATION: gitaction
-      TABLES: connectionref
+
   
     strategy:
       matrix: 
