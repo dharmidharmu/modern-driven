@@ -46,7 +46,7 @@ jobs:
   
     strategy:
       matrix:
-        solution: ['${{self:env.CUSTOMIZATION}}','${{self:env.TABLES}}']
+        solution: ['${{env.CUSTOMIZATION}}','${{env.TABLES}}']
          
     steps:
       - name: Export solution 
