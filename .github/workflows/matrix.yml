@@ -5,7 +5,7 @@ jobs:
     strategy:
       matrix:
         os: [macos-latest, windows-latest,ubuntu-latest]
-        steps:
+    steps:
           - name: sample
             run: echo ${{matrix.os}}
   
