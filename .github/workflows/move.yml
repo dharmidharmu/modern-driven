@@ -74,7 +74,7 @@ jobs:
       RUNNER_DEBUG: 1
     strategy:
       matrix: 
-        solution: ["${{env.CUSTOMIZATION}}","${{env.TABLES}}""]
+        solution: ["${{env.CUSTOMIZATION}}","${{env.TABLES}}"]
 
     steps:
     - uses: actions/checkout@v2
