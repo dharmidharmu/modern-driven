@@ -8,5 +8,5 @@ jobs:
         os: [macos-latest, windows-latest,ubuntu-latest]
     steps:
           - name: sample
-            run: echo ${{matrix.os}}
+            run: echo "${{matrix.os}}"
   
