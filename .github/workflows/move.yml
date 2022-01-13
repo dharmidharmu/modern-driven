@@ -47,8 +47,8 @@ jobs:
     strategy:
       matrix: 
         solution: 
-          - ${{env.CUSTOMIZATION}}
-          - ${{env.TABLES}}
+          - ${{CUSTOMIZATION}}
+          - ${{TABLES}}
          
     steps:
       - name: Export solution 
@@ -83,8 +83,8 @@ jobs:
     strategy:
       matrix: 
         solution: 
-          - ${{env.CUSTOMIZATION}}
-          - ${{env.TABLES}}
+          - ${{CUSTOMIZATION}}
+          - ${{TABLES}}
 
     steps:
     - uses: actions/checkout@v2
