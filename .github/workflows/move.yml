@@ -2,7 +2,7 @@
 name: DevToQA
 
 #Trigger Flow Manually
-on: worflow_dispatch
+on: workflow_dispatch
 
 #Solution Names to be exported From Dev Environment
 env:
