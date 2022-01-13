@@ -29,6 +29,13 @@ jobs:
           app-id: ${{ secrets.APPID }}
           client-secret: ${{ secrets.CLIENT_SECRET }}
           tenant-id: ${{ secrets.TENANT_ID }}
+      - name: Publish Solution 
+        uses: microsoft/powerplatform-actions/publish-solution@v0
+        with:
+          environment-url: ${{ secrets.E2EDEV }}
+          app-id: ${{ secrets.APPID }}
+          client-secret: ${{ secrets.CLIENT_SECRET }}
+          tenant-id: ${{ secrets.TENANT_ID }}
 
   ExportFromDev:
     runs-on: windows-latest
@@ -39,15 +46,8 @@ jobs:
   
     strategy:
       matrix: 
-        solution: ["${CUSTOMIZATION}","${TABLES}"]
+        solution: [${{CUSTOMIZATION}},${{TABLES}}]
     steps:
-      - name: Publish Solution 
-        uses: microsoft/powerplatform-actions/publish-solution@v0
-        with:
-          environment-url: ${{ secrets.E2EDEV }}
-          app-id: ${{ secrets.APPID }}
-          client-secret: ${{ secrets.CLIENT_SECRET }}
-          tenant-id: ${{ secrets.TENANT_ID }}
       - name: Export solution 
         uses: microsoft/powerplatform-actions/export-solution@v0
         with:
