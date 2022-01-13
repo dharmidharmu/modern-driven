@@ -56,7 +56,7 @@ jobs:
           app-id: ${{ secrets.APPID }}
           client-secret: ${{ secrets.CLIENT_SECRET }}
           tenant-id: ${{ secrets.TENANT_ID }}
-          solution-name: SOLUTIONNAME
+          solution-name: ${{matrix.solution}}
           managed: true
           solution-output-file: out/export/${{matrix.solution}}.zip
       - name: Check Solution
