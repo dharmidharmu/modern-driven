@@ -5,7 +5,7 @@ name: DevToQA
 on: workflow_dispatch
 
 #Solution Names to be exported From Dev Environment
-env:
+solutions:
   CUSTOMIZATION: gitaction
   TABLES: connectionref
 
@@ -46,7 +46,7 @@ jobs:
   
     strategy:
       matrix:
-        solution: ["${{env.CUSTOMIZATION}}","${{env.TABLES}}"]
+        solution: ["${{solutions.CUSTOMIZATION}}","${{solutions.env.TABLES}}"]
          
     steps:
       - name: Export solution 
@@ -80,7 +80,7 @@ jobs:
  
     strategy:
       matrix: 
-        solution: [gitaction,connectionref]
+        solution: ["${{solutions.CUSTOMIZATION}}","${{solutions.env.TABLES}}"]
 
     steps:
     - uses: actions/checkout@v2
