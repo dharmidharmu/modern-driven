@@ -35,7 +35,7 @@ jobs:
       RUNNER_DEBUG: 1
     strategy:
       matrix: 
-        solution: ["${{env.CUSTOMIZATION}}","${{env.TABLES}}","${{env.PROCESS}}","${{env.APP}}","${{env.SECURITY}}","${{env.FLOW}}"]
+        solution: ["${{env.CUSTOMIZATION}}","${{env.TABLES}}"]
     steps:
       - name: Publish Solution 
         uses: microsoft/powerplatform-actions/publish-solution@v0
@@ -61,7 +61,7 @@ jobs:
           app-id: ${{ secrets.APPID }}
           client-secret: ${{ secrets.CLIENT_SECRET }}
           tenant-id: ${{ secrets.TENANT_ID }}
-          path: out/export/SOLUTIONNAME.zip
+          path: out/export/${{matrix.solution}}.zip
       - name: Upload the ready to ship solution to GH artifact store
         uses: actions/upload-artifact@v2
         with:
