@@ -8,13 +8,14 @@ on: workflow_dispatch
 env:
   CUSTOMIZATION: gitaction
   TABLES: connectionref
+  RUNNER_DEBUG: 1
+  
 
 
 jobs:
   WhoAmI:
     runs-on: windows-latest
-    env:
-      RUNNER_DEBUG: 1
+   
     steps:
       #checkout git repo
       - uses: actions/checkout@v2
@@ -31,8 +32,7 @@ jobs:
 
   ExportFromDev:
     runs-on: windows-latest
-    env:
-      RUNNER_DEBUG: 1
+  
     strategy:
       matrix: 
         solution: ["${{env.CUSTOMIZATION}}","${{env.TABLES}}"]
@@ -68,10 +68,9 @@ jobs:
           name: ${{matrix.solution}}-managedSolution
           path: out/export/${{matrix.solution}}.zip
   ImportToQA:
-    need: [ExportFromDev]
+    needs: [ExportFromDev]
     runs-on: windows-latest
-    env:
-      RUNNER_DEBUG: 1
+ 
     strategy:
       matrix: 
         solution: ["${{env.CUSTOMIZATION}}","${{env.TABLES}}"]
