@@ -41,7 +41,7 @@ jobs:
       - name: Connection-${env.TARGET_ENV_NAME}
         uses: microsoft/powerplatform-actions/who-am-i@v0
         with:
-          environment-url: ${{TARGET_ENV_URL}}
+          environment-url: ${{env.TARGET_ENV_URL}}
           app-id: ${{env.APPID}}
           client-secret: ${{env.CLIENT_SECRET}}
           tenant-id: ${{env.TENANT_ID}}
