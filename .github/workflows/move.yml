@@ -4,14 +4,30 @@ name: DevToQA
 #Trigger Flow Manually
 on: workflow_dispatch
 
-#Solution Names to be exported From Dev Environment
-env:
-  CUSTOMIZATION: gitaction
-  TABLES: connectionref
+#Source and Destination Envirnoment Details
+environments:
+  SOURCE_ENV_NAME: DEV
+  SOURCE_ENV_URL: ${{ secrets.E2EDEV }}
+  TARGET_ENV_NAME: QA 
+  TARGET_ENV_URL: ${{ secrets.E2EQA }}
 
+#service principal details
+service:
+  APPID: ${{ secrets.APPID }}
+  CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
+  TENANT_ID: ${{ secrets.TENANT_ID }}
+
+#Solution Names to be exported From Dev Environment
+solutions:
+  CUSTOMIZATION: MCS E2E Productivity-R1-Customization
+  TABLES: MCS E2E Productivity-R1-Tables
+  PROCESS: MCS E2E Productivity-R1-Process
+  APP: MCS E2E Productivity-R1-App
+  SECURITY: MCS E2E Productivity-R1-Security Roles
+  FLOW: MCS E2E Productivity-R1-Power Automate Flow
 
 jobs:
-  WhoAmI:
+  Connection:
     runs-on: windows-latest
     env:
       RUNNER_DEBUG: 1
@@ -21,49 +37,59 @@ jobs:
         with:
           lfs: true
       #check the Service Principal Connection Validation
-      - name: Who-am-i 
+      - name: Connection-${{environments.SOURCE_ENV_NAME}}
         uses: microsoft/powerplatform-actions/who-am-i@v0
         with:
-          environment-url: ${{ secrets.E2EDEV }}
-          app-id: ${{ secrets.APPID }}
-          client-secret: ${{ secrets.CLIENT_SECRET }}
-          tenant-id: ${{ secrets.TENANT_ID }}
-      - name: Publish Solution 
+          environment-url: ${{environments.SOURCE_ENV_URL}}
+          app-id: ${{service.APPID}}
+          client-secret: ${{service.CLIENT_SECRET}}
+          tenant-id: ${{service.TENANT_ID}}
+      - name: Connection-${{environments.TARGET_ENV_NAME}}
+        uses: microsoft/powerplatform-actions/who-am-i@v0
+        with:
+          environment-url: ${{environments.TARGET_ENV_URL}}
+          app-id: ${{service.APPID}}
+          client-secret: ${{service.CLIENT_SECRET}}
+          tenant-id: ${{service.TENANT_ID}}
+      - name: Publish Solutions in ${{environments.SOURCE_ENV_NAME}}
         uses: microsoft/powerplatform-actions/publish-solution@v0
         with:
-          environment-url: ${{ secrets.E2EDEV }}
-          app-id: ${{ secrets.APPID }}
-          client-secret: ${{ secrets.CLIENT_SECRET }}
-          tenant-id: ${{ secrets.TENANT_ID }}
+          environment-url: ${{environments.SOURCE_ENV_URL}}
+          app-id: ${{service.APPID}}
+          client-secret: ${{service.CLIENT_SECRET}}
+          tenant-id: ${{service.TENANT_ID}}
   #Export Solutions from Dev Environment
-  ExportFromDev:
+  Export-From-DEV:
     runs-on: windows-latest
-    needs: [WhoAmI]
+    needs: [Connection]
     env:
       RUNNER_DEBUG: 1
     strategy:
       matrix: 
         solution: 
-          - gitaction
-          - connectionref
-    
+          - MCS E2E Productivity-R1-Customization
+          - MCS E2E Productivity-R1-Tables
+          - MCS E2E Productivity-R1-Process
+          - MCS E2E Productivity-R1-App
+          - MCS E2E Productivity-R1-Power Automate Flow
     steps:
-      - name: Export solution 
+      - name: Export solution ${{matrix.solution}}
         uses: microsoft/powerplatform-actions/export-solution@v0
         with:
-          environment-url: ${{ secrets.E2EDEV }}
-          app-id: ${{ secrets.APPID }}
-          client-secret: ${{ secrets.CLIENT_SECRET }}
-          tenant-id: ${{ secrets.TENANT_ID }}
+          environment-url: ${{environments.SOURCE_ENV_URL}}
+          app-id: ${{service.APPID}}
+          client-secret: ${{service.CLIENT_SECRET}}
+          tenant-id: ${{service.TENANT_ID}}
           solution-name: ${{matrix.solution}}
+          managed: true
           solution-output-file: out/export/${{matrix.solution}}.zip
-      - name: Check Solution
+      - name: Check Solution ${{matrix.solution}}
         uses: microsoft/powerplatform-actions/check-solution@v0
         with:
-          environment-url: ${{ secrets.E2EDEV }}
-          app-id: ${{ secrets.APPID }}
-          client-secret: ${{ secrets.CLIENT_SECRET }}
-          tenant-id: ${{ secrets.TENANT_ID }}
+          environment-url: ${{environments.SOURCE_ENV_URL}}
+          app-id: ${{service.APPID}}
+          client-secret: ${{service.CLIENT_SECRET}}
+          tenant-id: ${{service.TENANT_ID}}
           path: out/export/${{matrix.solution}}.zip
       - name: Upload the ready to ship solution to GH artifact store
         uses: actions/upload-artifact@v2
@@ -71,38 +97,97 @@ jobs:
           name: ${{matrix.solution}}-managedSolution
           path: out/export/${{matrix.solution}}.zip
   #Import Solutions to QA Envirnoment
-  ImportToQA:
-    needs: [ExportFromDev]
+  ImportTo-QA:
+    needs: [Export-From-DEV]
     runs-on: windows-latest
     steps:
-    - name: Fetch the ready to ship solution ${{env.CUSTOMIZATION}} from GH artifact store
+    - name: Fetch the ready to ship solution ${{solutions.CUSTOMIZATION}} from GH artifact store
       uses: actions/download-artifact@v2
       with:
-        name: ${{env.CUSTOMIZATION}}-managedSolution
+        name: ${{solutions.CUSTOMIZATION}}-managedSolution
         path: out/release/
-    - name: Import ${{env.CUSTOMIZATION}} Solution to QA Environment
+    - name: Import ${{solutions.CUSTOMIZATION}} Solution to ${{environments.TARGET_ENV_NAME}} Environment
       uses: microsoft/powerplatform-actions/import-solution@v0
       with:
-        environment-url: ${{ secrets.E2EQA }}
-        app-id: ${{ secrets.APPID }}
-        client-secret: ${{ secrets.CLIENT_SECRET }}
-        tenant-id: ${{ secrets.TENANT_ID }}
-        solution-file: out/release/${{env.CUSTOMIZATION}}.zip
+        environment-url: ${{environments.TARGET_ENV_URL}}
+        app-id: ${{service.APPID}}
+        client-secret: ${{service.CLIENT_SECRET}}
+        tenant-id: ${{service.TENANT_ID}}
+        solution-file: out/release/${{solutions.CUSTOMIZATION}}.zip
         force-overwrite: true
         publish-changes: true
-    - name: Fetch the ready to ship solution ${{env.TABLES}} from GH artifact store
+    - name: Fetch the ready to ship solution ${{solutions.TABLES}} from GH artifact store
       uses: actions/download-artifact@v2
       with:
-        name: ${{env.TABLES}}-managedSolution
+        name: ${{solutions.TABLES}}-managedSolution
         path: out/release/
-    - name: Import ${{env.TABLES}} Solution to QA Environment
+    - name: Import ${{solutions.TABLES}} Solution to ${{environments.TARGET_ENV_NAME}} Environment
       uses: microsoft/powerplatform-actions/import-solution@v0
       with:
-        environment-url: ${{ secrets.E2EQA }}
-        app-id: ${{ secrets.APPID }}
-        client-secret: ${{ secrets.CLIENT_SECRET }}
-        tenant-id: ${{ secrets.TENANT_ID }}
-        solution-file: out/release/${{env.TABLES}}.zip
+        environment-url: ${{environments.TARGET_ENV_URL}}
+        app-id: ${{service.APPID}}
+        client-secret: ${{service.CLIENT_SECRET}}
+        tenant-id: ${{service.TENANT_ID}}
+        solution-file: out/release/${{solutions.TABLES}}.zip
         force-overwrite: true
         publish-changes: true
-   
+    - name: Fetch the ready to ship solution ${{solutions.PROCESS}} from GH artifact store
+      uses: actions/download-artifact@v2
+      with:
+        name: ${{solutions.PROCESS}}-managedSolution
+        path: out/release/
+    - name: Import ${{solutions.PROCESS}} Solution to ${{environments.TARGET_ENV_NAME}} Environment
+      uses: microsoft/powerplatform-actions/import-solution@v0
+      with:
+        environment-url: ${{environments.TARGET_ENV_URL}}
+        app-id: ${{service.APPID}}
+        client-secret: ${{service.CLIENT_SECRET}}
+        tenant-id: ${{service.TENANT_ID}}
+        solution-file: out/release/${{solutions.PROCESS}}.zip
+        force-overwrite: true
+        publish-changes: true
+    - name: Fetch the ready to ship solution ${{solutions.APP}} from GH artifact store
+      uses: actions/download-artifact@v2
+      with:
+        name: ${{solutions.APP}}-managedSolution
+        path: out/release/
+    - name: Import ${{solutions.APP}} Solution to ${{environments.TARGET_ENV_NAME}} Environment
+      uses: microsoft/powerplatform-actions/import-solution@v0
+      with:
+        environment-url: ${{environments.TARGET_ENV_URL}}
+        app-id: ${{service.APPID}}
+        client-secret: ${{service.CLIENT_SECRET}}
+        tenant-id: ${{service.TENANT_ID}}
+        solution-file: out/release/${{solutions.APP}}.zip
+        force-overwrite: true
+        publish-changes: true
+    - name: Fetch the ready to ship solution ${{solutions.SECURITY}} from GH artifact store
+      uses: actions/download-artifact@v2
+      with:
+        name: ${{solutions.SECURITY}}-managedSolution
+        path: out/release/
+    - name: Import ${{solutions.SECURITY}} Solution to ${{environments.TARGET_ENV_NAME}} Environment
+      uses: microsoft/powerplatform-actions/import-solution@v0
+      with:
+        environment-url: ${{environments.TARGET_ENV_URL}}
+        app-id: ${{service.APPID}}
+        client-secret: ${{service.CLIENT_SECRET}}
+        tenant-id: ${{service.TENANT_ID}}
+        solution-file: out/release/${{solutions.SECURITY}}.zip
+        force-overwrite: true
+        publish-changes: true
+    - name: Fetch the ready to ship solution ${{solutions.FLOW}} from GH artifact store
+      uses: actions/download-artifact@v2
+      with:
+        name: ${{solutions.FLOW}}-managedSolution
+        path: out/release/
+    - name: Import ${{solutions.FLOW}} Solution to ${{environments.TARGET_ENV_NAME}} Environment
+      uses: microsoft/powerplatform-actions/import-solution@v0
+      with:
+        environment-url: ${{environments.TARGET_ENV_URL}}
+        app-id: ${{service.APPID}}
+        client-secret: ${{service.CLIENT_SECRET}}
+        tenant-id: ${{service.TENANT_ID}}
+        solution-file: out/release/${{solutions.FLOW}}.zip
+        force-overwrite: true
+        publish-changes: true 
