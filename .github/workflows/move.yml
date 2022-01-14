@@ -31,21 +31,21 @@ jobs:
         with:
           lfs: true
       #check the Service Principal Connection Validation
-      - name: Connection-${SOURCE_ENV_NAME}
+      - name: Connection-${{env.SOURCE_ENV_NAME}}
         uses: microsoft/powerplatform-actions/who-am-i@v0
         with:
           environment-url: ${{env.SOURCE_ENV_URL}}
           app-id: ${{env.APPID}}
           client-secret: ${{env.CLIENT_SECRET}}
           tenant-id: ${{env.TENANT_ID}}
-      - name: Connection-${env.TARGET_ENV_NAME}
+      - name: Connection-${{env.TARGET_ENV_NAME}}
         uses: microsoft/powerplatform-actions/who-am-i@v0
         with:
           environment-url: ${{env.TARGET_ENV_URL}}
           app-id: ${{env.APPID}}
           client-secret: ${{env.CLIENT_SECRET}}
           tenant-id: ${{env.TENANT_ID}}
-      - name: Publish Solutions in ${SOURCE_ENV_NAME}
+      - name: Publish Solutions in ${{env.SOURCE_ENV_NAME}}
         uses: microsoft/powerplatform-actions/publish-solution@v0
         with:
           environment-url: ${{env.SOURCE_ENV_URL}}
