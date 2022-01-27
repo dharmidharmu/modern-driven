@@ -47,13 +47,13 @@ jobs:
           app-id: ${{env.APPID}}
           client-secret: ${{env.CLIENT_SECRET}}
           tenant-id: ${{env.TENANT_ID}}
-      - name: Publish Solutions in ${{env.SOURCE_ENV_NAME}}
-        uses: microsoft/powerplatform-actions/publish-solution@v0
-        with:
-          environment-url: ${{env.SOURCE_ENV_URL}}
-          app-id: ${{env.APPID}}
-          client-secret: ${{env.CLIENT_SECRET}}
-          tenant-id: ${{env.TENANT_ID}}
+#       - name: Publish Solutions in ${{env.SOURCE_ENV_NAME}}
+#         uses: microsoft/powerplatform-actions/publish-solution@v0
+#         with:
+#           environment-url: ${{env.SOURCE_ENV_URL}}
+#           app-id: ${{env.APPID}}
+#           client-secret: ${{env.CLIENT_SECRET}}
+#           tenant-id: ${{env.TENANT_ID}}
   #Export Solutions from Dev Environment
   Export-From-DEV:
     runs-on: windows-latest
