@@ -105,5 +105,3 @@ jobs:
         force-overwrite: true
         publish-changes: true
         run-asynchronously: true
-          echo Add other actions to build,
-          echo test, and deploy your project.
