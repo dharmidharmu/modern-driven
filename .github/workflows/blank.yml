@@ -1,0 +1,109 @@
+name: export-and-branch-solution
+# Export solution from DEV environment
+#  unpack it and prepare, commit and push a git branch with the changes
+
+on:
+  workflow_dispatch:
+    inputs:
+      # Change this value
+      solution_name:
+        description: 'name of the solution to worked on from Power Platform'
+        required: true
+
+
+env:
+  #envirnoments
+  SOURCE_ENV_NAME: DEV
+  SOURCE_ENV_URL: ${{ secrets.E2EDEV }}
+  TARGET_ENV_NAME: QA
+  TARGET_ENV_URL: ${{ secrets.E2EQA }}
+  #service principal 
+  APPID: ${{ secrets.APPID }}
+  CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
+  TENANT_ID: ${{ secrets.TENANT_ID }}
+  
+jobs:
+  Connection:
+    runs-on: windows-latest
+    env:
+      RUNNER_DEBUG: 1
+    steps:
+      #checkout git repo
+      - uses: actions/checkout@v2
+        with:
+          lfs: true
+      #check the Service Principal Connection Validation
+      - name: Connection-${{env.SOURCE_ENV_NAME}}
+        uses: microsoft/powerplatform-actions/who-am-i@v0
+        with:
+          environment-url: ${{env.SOURCE_ENV_URL}}
+          app-id: ${{env.APPID}}
+          client-secret: ${{env.CLIENT_SECRET}}
+          tenant-id: ${{env.TENANT_ID}}
+      - name: Connection-${{env.TARGET_ENV_NAME}}
+        uses: microsoft/powerplatform-actions/who-am-i@v0
+        with:
+          environment-url: ${{env.TARGET_ENV_URL}}
+          app-id: ${{env.APPID}}
+          client-secret: ${{env.CLIENT_SECRET}}
+          tenant-id: ${{env.TENANT_ID}}
+      - name: Publish Solutions in ${{env.SOURCE_ENV_NAME}}
+        uses: microsoft/powerplatform-actions/publish-solution@v0
+        with:
+          environment-url: ${{env.SOURCE_ENV_URL}}
+          app-id: ${{env.APPID}}
+          client-secret: ${{env.CLIENT_SECRET}}
+          tenant-id: ${{env.TENANT_ID}}
+  #Export Solutions from Dev Environment
+  Export-From-DEV:
+    runs-on: windows-latest
+    needs: [Connection]
+    env:
+      RUNNER_DEBUG: 1
+    steps:
+      - name: Export solution 
+        uses: microsoft/powerplatform-actions/export-solution@v0
+        with:
+          environment-url: ${{env.SOURCE_ENV_URL}}
+          app-id: ${{env.APPID}}
+          client-secret: ${{env.CLIENT_SECRET}}
+          tenant-id: ${{env.TENANT_ID}}
+          solution-name: ${{ github.event.inputs.solution_name }}
+          managed: true
+          solution-output-file: out/export/${{ github.event.inputs.solution_name }}.zip
+      - name: Check Solution 
+        uses: microsoft/powerplatform-actions/check-solution@v0
+        with:
+          environment-url: ${{env.SOURCE_ENV_URL}}
+          app-id: ${{env.APPID}}
+          client-secret: ${{env.CLIENT_SECRET}}
+          tenant-id: ${{env.TENANT_ID}}
+          path: out/export/${{ github.event.inputs.solution_name }}.zip
+      - name: Upload the ready to ship solution to GH artifact store
+        uses: actions/upload-artifact@v2
+        with:
+          name: ${{ github.event.inputs.solution_name }}-managedSolution
+          path: out/export/${{ github.event.inputs.solution_name }}.zip
+  #Import Solutions to QA Envirnoment
+  ImportTo-QA:
+    needs: [Export-From-DEV]
+    runs-on: windows-latest
+    steps:
+    - name: Fetch the ready to ship solution $${{ github.event.inputs.solution_name }} from GH artifact store
+      uses: actions/download-artifact@v2
+      with:
+        name: ${{ github.event.inputs.solution_name }}-managedSolution
+        path: out/release/
+    - name: Import ${{ github.event.inputs.solution_name }} Solution to ${{env.TARGET_ENV_NAME}} Environment
+      uses: microsoft/powerplatform-actions/import-solution@v0
+      with:
+        environment-url: ${{env.TARGET_ENV_URL}}
+        app-id: ${{env.APPID}}
+        client-secret: ${{env.CLIENT_SECRET}}
+        tenant-id: ${{env.TENANT_ID}}
+        solution-file: out/release/${{ github.event.inputs.solution_name }}.zip
+        force-overwrite: true
+        publish-changes: true
+        run-asynchronously: true
+          echo Add other actions to build,
+          echo test, and deploy your project.
