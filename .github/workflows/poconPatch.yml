@@ -105,3 +105,11 @@ jobs:
         force-overwrite: true
         publish-changes: true
         run-asynchronously: true
+    - name: clone a solution
+      uses: microsoft/powerplatform-actions/clone-solution@v0
+      with:
+        app-id: ${{env.APPID}}
+        client-secret: ${{env.CLIENT_SECRET}}
+        tenant-id: ${{env.TENANT_ID}}
+        environment-url: ${{env.TARGET_ENV_URL}}
+        solution-name: patch
