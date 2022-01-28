@@ -1,0 +1,111 @@
+#Name of Workflow
+name: ExportFromDev
+
+#Trigger Flow Manually
+on: workflow_dispatch
+
+#Source and Destination Envirnoment Details
+env:
+  #envirnoments
+  SOURCE_ENV_NAME: DEV
+  SOURCE_ENV_URL: ${{ secrets.E2EDEV }}
+  TARGET_ENV_NAME: QA
+  TARGET_ENV_URL: ${{ secrets.E2EQA }}
+  #service principal 
+  APPID: ${{ secrets.APPID }}
+  CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
+  TENANT_ID: ${{ secrets.TENANT_ID }}
+  #soluitons
+  CUSTOMIZATION: patch
+  TABLES: demo
+ 
+
+jobs:
+  Connection:
+    runs-on: windows-latest
+    env:
+      RUNNER_DEBUG: 1
+    steps:
+      #checkout git repo
+      - uses: actions/checkout@v2
+        with:
+          lfs: true
+          token: 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
+      #check the Service Principal Connection Validation
+      - name: Connection-${{env.SOURCE_ENV_NAME}}
+        uses: microsoft/powerplatform-actions/who-am-i@v0
+        with:
+          environment-url: ${{env.SOURCE_ENV_URL}}
+          app-id: ${{env.APPID}}
+          client-secret: ${{env.CLIENT_SECRET}}
+          tenant-id: ${{env.TENANT_ID}}
+      - name: Connection-${{env.TARGET_ENV_NAME}}
+        uses: microsoft/powerplatform-actions/who-am-i@v0
+        with:
+          environment-url: ${{env.TARGET_ENV_URL}}
+          app-id: ${{env.APPID}}
+          client-secret: ${{env.CLIENT_SECRET}}
+          tenant-id: ${{env.TENANT_ID}}
+  #Export Solutions from Dev Environment
+  Export-From-DEV:
+    runs-on: windows-latest
+    needs: [Connection]
+    env:
+      RUNNER_DEBUG: 1
+    strategy:
+      matrix: 
+        solution: 
+          - patch
+          - demo
+ 
+    steps:
+       #checkout git repo
+      - uses: actions/checkout@v2
+        with:
+          lfs: true
+          token: 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
+      - name: Export solution ${{matrix.solution}}
+        uses: microsoft/powerplatform-actions/export-solution@v0
+        with:
+          environment-url: ${{env.SOURCE_ENV_URL}}
+          app-id: ${{env.APPID}}
+          client-secret: ${{env.CLIENT_SECRET}}
+          tenant-id: ${{env.TENANT_ID}}
+          solution-name: ${{matrix.solution}}
+          managed: true
+          solution-output-file: out/export/${{matrix.solution}}.zip
+      - name: Check Solution ${{matrix.solution}}
+        uses: microsoft/powerplatform-actions/check-solution@v0
+        with:
+          environment-url: ${{env.SOURCE_ENV_URL}}
+          app-id: ${{env.APPID}}
+          client-secret: ${{env.CLIENT_SECRET}}
+          tenant-id: ${{env.TENANT_ID}}
+          path: solutions/${{matrix.solution}}.zip
+      - name: Upload the ready to ship solution to GH artifact store
+        uses: actions/upload-artifact@v2
+        with:
+          name: managedSolutions
+          path: out/export/${{matrix.solution}}.zip
+  Push-Repo:
+      runs-on: windows-latest
+      needs: [Export-From-DEV]
+      
+      steps:
+        - uses: actions/checkout@v2
+          with:
+            lfs: true
+            token: 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
+        - name: Fetch the ready to ship solution ${{env.CUSTOMIZATION}} from GH artifact store
+          uses: actions/download-artifact@v2
+          with:
+            name: managedSolutions
+            path: solutions/
+        - name: push to repo
+          run: |
+            git config --global user.name 'GitHub Workflow'
+            git config --global user.email 'githubworkflow@github.com'
+            git add .
+            git status
+            git commit -m "adding solution for build ${{ github.run_number }}"
+            git push origin main
