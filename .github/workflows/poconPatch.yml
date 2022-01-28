@@ -68,7 +68,7 @@ jobs:
           app-id: ${{env.APPID}}
           client-secret: ${{env.CLIENT_SECRET}}
           tenant-id: ${{env.TENANT_ID}}
-          solution-name: ${{ github.event.inputs.solution_name }}
+          solution-solution-name: ${{ github.event.inputs.solution_name }}
           patch-version: 5
           
       - name: Export solution 
