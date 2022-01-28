@@ -71,7 +71,7 @@ jobs:
           tenant-id: ${{env.TENANT_ID}}
           solution-name: ${{ github.event.inputs.solution_name }}
           managed: true
-          solution-version: 2.0.0.1
+          solution-version: 5
           solution-output-file: out/export/${{ github.event.inputs.solution_name }}.zip
       - name: Check Solution 
         uses: microsoft/powerplatform-actions/check-solution@v0
