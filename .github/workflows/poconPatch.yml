@@ -68,6 +68,7 @@ jobs:
           app-id: ${{env.APPID}}
           client-secret: ${{env.CLIENT_SECRET}}
           tenant-id: ${{env.TENANT_ID}}
+          patch-version: '5'
           
       - name: Export solution 
         uses: microsoft/powerplatform-actions/export-solution@v0
