@@ -71,7 +71,7 @@ jobs:
           solution-name: ${{ github.event.inputs.solution_name }}
           managed: true
           solution-output-file: out/export/${{ github.event.inputs.solution_name }}.zip
-          solution-version: 2.0.0.1
+          solution-version: 15
       - name: Check Solution 
         uses: microsoft/powerplatform-actions/check-solution@v0
         with:
