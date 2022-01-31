@@ -23,6 +23,23 @@ env:
 
 jobs:
    #Import Solutions to QA Envirnoment
+  Connection:
+    runs-on: windows-latest
+    env:
+      RUNNER_DEBUG: 1
+    steps:
+      #checkout git repo
+      - uses: actions/checkout@v2
+        with:
+          lfs: true
+      #check the Service Principal Connection Validation
+      - name: Connection-${{env.TARGET_ENV_NAME}}
+        uses: microsoft/powerplatform-actions/who-am-i@v0
+        with:
+          environment-url: ${{env.TARGET_ENV_URL}}
+          app-id: ${{env.APPID}}
+          client-secret: ${{env.CLIENT_SECRET}}
+          tenant-id: ${{env.TENANT_ID}}
   ImportTo-QA:
     runs-on: windows-latest
     steps:
