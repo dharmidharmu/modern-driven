@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
     inputs:
       # Change this value
-      solution_name:
+      solution_version:
         description: 'name of the version to import in Production(eg. 1.0.0.1)'
         required: true
   
@@ -59,12 +59,6 @@ jobs:
         force-overwrite: true
         publish-changes: true
         run-asynchronously: true
-    # Import MCSE2EProductivityR1Tables
-    - name: Fetch the ready to ship solution ${{env.TABLES}} from GH artifact store
-      uses: actions/download-artifact@v2
-      with:
-        name: ${{env.TABLES}}-managedSolution
-        path: out/release/
     - name: Import ${{env.TABLES}} Solution to ${{env.TARGET_ENV_NAME}} Environment
       uses: microsoft/powerplatform-actions/import-solution@v0
       with:
