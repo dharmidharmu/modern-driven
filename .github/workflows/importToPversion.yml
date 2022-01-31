@@ -20,6 +20,9 @@ env:
   APPID: ${{ secrets.APPID }}
   CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
   TENANT_ID: ${{ secrets.TENANT_ID }}
+   #soluitons
+  CUSTOMIZATION: poc1
+  TABLES: poc2
 
 jobs:
    #Import Solutions to QA Envirnoment
