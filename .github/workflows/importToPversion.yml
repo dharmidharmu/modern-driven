@@ -1,0 +1,65 @@
+#Name of Workflow
+name: ImportToP-V
+
+#Trigger Flow Manually
+on: 
+  workflow_dispatch:
+    inputs:
+      # Change this value
+      solution_name:
+        description: 'name of the version to import in Production(eg. 1.0.0.1)'
+        required: true
+  
+
+#Source and Destination Envirnoment Details
+env:
+  #envirnoments
+  TARGET_ENV_NAME: Prod
+  TARGET_ENV_URL: ${{ secrets.E2EP }}
+  #service principal 
+  APPID: ${{ secrets.APPID }}
+  CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
+  TENANT_ID: ${{ secrets.TENANT_ID }}
+
+jobs:
+   #Import Solutions to QA Envirnoment
+  ImportTo-QA:
+    runs-on: windows-latest
+    steps:
+     #checkout git repo
+    - uses: actions/checkout@v2
+      with:
+        lfs: true
+    - name: Import ${{env.CUSTOMIZATION}} Solution to ${{env.TARGET_ENV_NAME}} Environment
+      uses: microsoft/powerplatform-actions/import-solution@v0
+      with:
+        environment-url: ${{env.TARGET_ENV_URL}}
+        app-id: ${{env.APPID}}
+        client-secret: ${{env.CLIENT_SECRET}}
+        tenant-id: ${{env.TENANT_ID}}
+        solution-file: drop/{{ github.event.inputs.solution_version }}/${{env.CUSTOMIZATION}}.zip
+        force-overwrite: true
+        publish-changes: true
+        run-asynchronously: true
+    # Import MCSE2EProductivityR1Tables
+    - name: Fetch the ready to ship solution ${{env.TABLES}} from GH artifact store
+      uses: actions/download-artifact@v2
+      with:
+        name: ${{env.TABLES}}-managedSolution
+        path: out/release/
+    - name: Import ${{env.TABLES}} Solution to ${{env.TARGET_ENV_NAME}} Environment
+      uses: microsoft/powerplatform-actions/import-solution@v0
+      with:
+        environment-url: ${{env.TARGET_ENV_URL}}
+        app-id: ${{env.APPID}}
+        client-secret: ${{env.CLIENT_SECRET}}
+        tenant-id: ${{env.TENANT_ID}}
+        solution-file: drop/{{ github.event.inputs.solution_version }}/${{env.TABLES}}.zip
+        force-overwrite: true
+        publish-changes: true
+        run-asynchronously: true
+    
+
+
+
+
