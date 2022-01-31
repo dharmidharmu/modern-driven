@@ -40,8 +40,9 @@ jobs:
           app-id: ${{env.APPID}}
           client-secret: ${{env.CLIENT_SECRET}}
           tenant-id: ${{env.TENANT_ID}}
-  ImportTo-QA:
+  ImportTo-P:
     runs-on: windows-latest
+    needs: [Connection]
     steps:
      #checkout git repo
     - uses: actions/checkout@v2
