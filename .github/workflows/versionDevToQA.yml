@@ -4,11 +4,6 @@ name: ExportFromDevandPushToReop-V
 #Trigger Flow Manually
 on: 
   workflow_dispatch:
-    inputs:
-      # Change this value
-      solution_version:
-        description: 'name of the version to store in drop(eg. 1.0.0.1)'
-        required: true
   
 
 #Source and Destination Envirnoment Details
@@ -52,8 +47,8 @@ jobs:
           app-id: ${{env.APPID}}
           client-secret: ${{env.CLIENT_SECRET}}
           tenant-id: ${{env.TENANT_ID}}
-  #Export Solutions from Dev Environment
-  Export-From-DEV:
+  #Export ManagesSolutions from Dev Environment
+  ExportManaged-From-DEV:
     runs-on: windows-latest
     needs: [Connection]
     env:
@@ -74,7 +69,7 @@ jobs:
           tenant-id: ${{env.TENANT_ID}}
           solution-name: ${{matrix.solution}}
           managed: true
-          solution-output-file: out/export/${{matrix.solution}}.zip
+          solution-output-file: out/exportmanaged/${{matrix.solution}}.zip
       - name: Check Solution ${{matrix.solution}}
         uses: microsoft/powerplatform-actions/check-solution@v0
         with:
@@ -82,35 +77,79 @@ jobs:
           app-id: ${{env.APPID}}
           client-secret: ${{env.CLIENT_SECRET}}
           tenant-id: ${{env.TENANT_ID}}
-          path: out/export/${{matrix.solution}}.zip
+          path: out/exportmanaged/${{matrix.solution}}.zip
       - name: Upload the ready to ship solution to GH artifact store
         uses: actions/upload-artifact@v2
         with:
           name: managedSolutions
-          path: out/export/${{matrix.solution}}.zip
+          path: out/exportmanaged/${{matrix.solution}}.zip
+
+  #Export ManagesSolutions from Dev Environment
+  ExportUnManaged-From-DEV:
+    runs-on: windows-latest
+    needs: [Connection]
+    env:
+      RUNNER_DEBUG: 1
+    strategy:
+      matrix: 
+        solution: 
+          - poc1
+          - poc2
+     
+    steps:
+      - name: Export solution ${{matrix.solution}}
+        uses: microsoft/powerplatform-actions/export-solution@v0
+        with:
+          environment-url: ${{env.SOURCE_ENV_URL}}
+          app-id: ${{env.APPID}}
+          client-secret: ${{env.CLIENT_SECRET}}
+          tenant-id: ${{env.TENANT_ID}}
+          solution-name: ${{matrix.solution}}
+          solution-output-file: out/exportunmanaged/${{matrix.solution}}.zip
+      - name: Check Solution ${{matrix.solution}}
+        uses: microsoft/powerplatform-actions/check-solution@v0
+        with:
+          environment-url: ${{env.SOURCE_ENV_URL}}
+          app-id: ${{env.APPID}}
+          client-secret: ${{env.CLIENT_SECRET}}
+          tenant-id: ${{env.TENANT_ID}}
+          path: out/exportunmanaged/${{matrix.solution}}.zip
+      - name: Upload the ready to ship solution to GH artifact store
+        uses: actions/upload-artifact@v2
+        with:
+          name: UnManagedSolutions
+          path: out/exportunmanaged/${{matrix.solution}}.zip
   #Import Solutions to QA Envirnoment
   ImportTo-QA:
-    needs: [Export-From-DEV]
+    needs: [ExportManaged-From-DEV, ExportUnManaged-From-DEV]
     runs-on: windows-latest
     steps:
+    - name: Get current date
+      id: date
+      run: echo "::set-output name=date::$(date +'%Y-%m-%d')"
      #checkout git repo
     - uses: actions/checkout@v2
       with:
         lfs: true
-    #Import MCSE2EProductivityR1Customization
     - name: Fetch the ready to ship solution ${{env.CUSTOMIZATION}} from GH artifact store
       uses: actions/download-artifact@v2
       with:
         name: managedSolutions
-        path: drop/${{ github.event.inputs.solution_version }}/
+        path: drop/${{ steps.date.outputs.date }}/managed/
+    - name: Fetch the ready to ship solution ${{env.CUSTOMIZATION}} from GH artifact store
+      uses: actions/download-artifact@v2
+      with:
+        name: UnManagedSolutions
+        path: drop/${{ steps.date.outputs.date }}/unmanaged/
     - name: Push the Solutions to Repo
       run: |
             git config --global user.name 'GitHub Workflow'
             git config --global user.email 'githubworkflow@github.com'
             git add .
             git status
-            git commit -m "adding solution for build {{ github.event.inputs.solution_name }}"
+            git commit -m "adding solution for build dated ${{ steps.date.outputs.date }}"
             git push origin main
+      #Import MCSE2EProductivityR1Customization
     - name: Import ${{env.CUSTOMIZATION}} Solution to ${{env.TARGET_ENV_NAME}} Environment
       uses: microsoft/powerplatform-actions/import-solution@v0
       with:
@@ -118,7 +157,7 @@ jobs:
         app-id: ${{env.APPID}}
         client-secret: ${{env.CLIENT_SECRET}}
         tenant-id: ${{env.TENANT_ID}}
-        solution-file: drop/${{ github.event.inputs.solution_version }}/${{env.CUSTOMIZATION}}.zip
+        solution-file: drop/${{ steps.date.outputs.date }}/managed/${{env.CUSTOMIZATION}}.zip
         force-overwrite: true
         publish-changes: true
         run-asynchronously: true
@@ -130,7 +169,7 @@ jobs:
         app-id: ${{env.APPID}}
         client-secret: ${{env.CLIENT_SECRET}}
         tenant-id: ${{env.TENANT_ID}}
-        solution-file: drop/${{ github.event.inputs.solution_version }}/${{env.TABLES}}.zip
+        solution-file: drop/${{ steps.date.outputs.date }}/managed/${{env.TABLES}}.zip
         force-overwrite: true
         publish-changes: true
         run-asynchronously: true
