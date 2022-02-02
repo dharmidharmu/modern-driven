@@ -17,7 +17,8 @@ env:
   APPID: ${{ secrets.APPID }}
   CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
   TENANT_ID: ${{ secrets.TENANT_ID }}
-  
+  USERNAME: dharmicrm3@dharmicrm3.onmicrosoft.com
+  password: Dharmi@220699
   #soluitons
   CUSTOMIZATION: poc1
   TABLES: poc2
@@ -38,14 +39,12 @@ jobs:
         uses: microsoft/powerplatform-actions/who-am-i@v0
         with:
           user-name: ${{env.USERNAME}}
-          password-secret: ${{ secrets.password }}
+          password-secret: ${{ env.password }}
       - name: Connection-${{env.TARGET_ENV_NAME}}
         uses: microsoft/powerplatform-actions/who-am-i@v0
         with:
-          environment-url: ${{env.TARGET_ENV_URL}}
-          app-id: ${{env.APPID}}
-          client-secret: ${{env.CLIENT_SECRET}}
-          tenant-id: ${{env.TENANT_ID}}
+           user-name: ${{env.USERNAME}}
+           password-secret: ${{ env.password }}
   #Export ManagesSolutions from Dev Environment
   ExportManaged-From-DEV:
     runs-on: windows-latest
