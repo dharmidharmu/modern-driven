@@ -36,12 +36,12 @@ jobs:
           lfs: true
       #check the Service Principal Connection Validation
       - name: Connection-${{env.SOURCE_ENV_NAME}}
-        uses: microsoft/powerplatform-actions/who-am-i@latest
+        uses: microsoft/powerplatform-actions/who-am-i@v0.5.2
         with:
           user-name: ${{env.USERNAME}}
           password-secret: ${{ env.password }}
       - name: Connection-${{env.TARGET_ENV_NAME}}
-        uses: microsoft/powerplatform-actions/who-am-i@latest
+        uses: microsoft/powerplatform-actions/who-am-i@v0.5.2
         with:
            user-name: ${{env.USERNAME}}
            password-secret: ${{ env.password }}
