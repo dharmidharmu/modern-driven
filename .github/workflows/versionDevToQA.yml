@@ -1,5 +1,5 @@
 #Name of Workflow
-name: ExportFromDevandPushToReop-V
+name: DevToQAandDrop
 
 #Trigger Flow Manually
 on: 
@@ -17,11 +17,10 @@ env:
   APPID: ${{ secrets.APPID }}
   CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
   TENANT_ID: ${{ secrets.TENANT_ID }}
-  USERNAME: dharmicrm3@dharmicrm3.onmicrosoft.com
-  password: Dharmi@220699
-  #soluitons
+ #soluitons
   CUSTOMIZATION: poc1
   TABLES: poc2
+
 
 
 jobs:
@@ -38,14 +37,25 @@ jobs:
       - name: Connection-${{env.SOURCE_ENV_NAME}}
         uses: microsoft/powerplatform-actions/who-am-i@v0
         with:
-          user-name: ${{env.USERNAME}}
-          password-secret: ${{ env.password }}
+          environment-url: ${{env.SOURCE_ENV_URL}}
+          app-id: ${{env.APPID}}
+          client-secret: ${{env.CLIENT_SECRET}}
+          tenant-id: ${{env.TENANT_ID}}
       - name: Connection-${{env.TARGET_ENV_NAME}}
         uses: microsoft/powerplatform-actions/who-am-i@v0
         with:
-           user-name: ${{env.USERNAME}}
-           password-secret: ${{ env.password }}
-  #Export ManagesSolutions from Dev Environment
+          environment-url: ${{env.TARGET_ENV_URL}}
+          app-id: ${{env.APPID}}
+          client-secret: ${{env.CLIENT_SECRET}}
+          tenant-id: ${{env.TENANT_ID}}
+      - name: Publish Solutions in ${{env.SOURCE_ENV_NAME}}
+        uses: microsoft/powerplatform-actions/publish-solution@v0
+        with:
+          environment-url: ${{env.SOURCE_ENV_URL}}
+          app-id: ${{env.APPID}}
+          client-secret: ${{env.CLIENT_SECRET}}
+          tenant-id: ${{env.TENANT_ID}}
+  #Export ManagedSolutions from Dev Environment
   ExportManaged-From-DEV:
     runs-on: windows-latest
     needs: [Connection]
@@ -56,6 +66,7 @@ jobs:
         solution: 
           - poc1
           - poc2
+         
      
     steps:
       - name: Export solution ${{matrix.solution}}
@@ -82,7 +93,7 @@ jobs:
           name: managedSolutions
           path: out/exportmanaged/${{matrix.solution}}.zip
 
-  #Export ManagesSolutions from Dev Environment
+  #Export UnManagedSolutions from Dev Environment
   ExportUnManaged-From-DEV:
     runs-on: windows-latest
     needs: [Connection]
@@ -91,8 +102,8 @@ jobs:
     strategy:
       matrix: 
         solution: 
-          - poc1
-          - poc2
+         - poc1
+         - poc2
      
     steps:
       - name: Export solution ${{matrix.solution}}
@@ -171,4 +182,4 @@ jobs:
         force-overwrite: true
         publish-changes: true
         run-asynchronously: true
-    
+  
