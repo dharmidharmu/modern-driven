@@ -41,7 +41,7 @@ jobs:
           user-name: ${{env.USERNAME}}
           password-secret: ${{ env.password }}
       - name: Connection-${{env.TARGET_ENV_NAME}}
-        uses: microsoft/powerplatform-actions/who-am-i@v0
+        uses: microsoft/powerplatform-actions/who-am-i@v0.5
         with:
            user-name: ${{env.USERNAME}}
            password-secret: ${{ env.password }}
