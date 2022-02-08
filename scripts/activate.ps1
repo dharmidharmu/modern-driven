@@ -1,8 +1,8 @@
 param(
-[string] $solutionName,
-[string] $clientId,
-[string] $clientSecret,
-[string] $url
+[string]$solutionName,
+[string]$clientId,
+[string]$clientSecret,
+[string]$url
 )
 
 $Module = Get-InstalledModule -Name "Microsoft.Xrm.Data.Powershell" -ErrorAction SilentlyContinue -WarningAction SilentlyContinue
@@ -21,8 +21,7 @@ else
 
 #Connection
 #$Conn = Connect-CrmOnline -ConnectionString "AuthType=ClientSecret;Url=${url};Timeout=02:00:00; Domain=; ClientId=${clientId};ClientSecret=${clientSecret}"
-$conn = Connect-CrmOnline -ConnectionString "RequireNewInstance=True;Url=${url};AuthType= `
-    ClientSecret;ClientId=${clientId};SkipDiscovery=True;ClientSecret=${clientSecret}" -ConnectionTimeoutInSeconds 500 -LogWriteDirectory "C:\temp\";
+$conn = Connect-CrmOnline -ConnectionString "RequireNewInstance=True;Url=${url};AuthType=ClientSecret;ClientId=${clientId};SkipDiscovery=True;ClientSecret=${clientSecret}" -ConnectionTimeoutInSeconds 500 -LogWriteDirectory "C:\temp\";
 
 if($Conn -eq $null){
 
