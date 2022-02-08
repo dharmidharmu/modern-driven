@@ -10,6 +10,7 @@ else
     Install-Module -Name Microsoft.Xrm.Data.Powershell -Force 
     Write-host "Module('Microsoft.Xrm.Data.Powershell') is installed successfully....";
 }
+Import-Module Microsoft.Xrm.Data.Powershell;
  
 
 #Connection
