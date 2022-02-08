@@ -1,10 +1,3 @@
-param(
-[string]$solutionName,
-[string]$clientId,
-[string]$clientSecret,
-[string]$url
-)
-
 $Module = Get-InstalledModule -Name "Microsoft.Xrm.Data.Powershell" -ErrorAction SilentlyContinue -WarningAction SilentlyContinue
 if($Module -ne $null)
 {
@@ -21,7 +14,7 @@ else
 
 #Connection
 #$Conn = Connect-CrmOnline -ConnectionString "AuthType=ClientSecret;Url=${url};Timeout=02:00:00; Domain=; ClientId=${clientId};ClientSecret=${clientSecret}"
-$conn = Connect-CrmOnline -ConnectionString "RequireNewInstance=True;Url=${url};AuthType=ClientSecret;ClientId=${clientId};SkipDiscovery=True;ClientSecret=${clientSecret}" -ConnectionTimeoutInSeconds 500 -LogWriteDirectory "C:\temp\";
+$conn = Connect-CrmOnline -ConnectionString "RequireNewInstance=True;Url=https://dharmicrm3-dev.crm8.dynamics.com;AuthType=ClientSecret;ClientId=c64ceadb-a365-4fdc-9d8b-a01ec7164dda;SkipDiscovery=True;ClientSecret=KjB7Q~llzl4NPyPRlPmVAwKabaT~VX4uTd6ya" -ConnectionTimeoutInSeconds 500 -LogWriteDirectory "C:\temp\";
 
 if($Conn -eq $null){
 
@@ -30,7 +23,7 @@ if($Conn -eq $null){
 
 }
 
-$solid = Get-CrmRecords -conn $conn -EntityLogicalName solution -FilterAttribute uniquename -FilterOperator "eq" -FilterValue $solutionName -Fields solutionid, friendlyname
+$solid = Get-CrmRecords -conn $conn -EntityLogicalName solution -FilterAttribute uniquename -FilterOperator "eq" -FilterValue poc1 -Fields solutionid, friendlyname
 Write-Host $solid.Count
 if($solid.Count -eq 1) 
 {
