@@ -57,4 +57,4 @@ jobs:
       shell: pwsh
       run: |
         cd scripts
-        .\activate.ps1 -solutionName "${{env.FLOW}}" -clientId "${{env.APPID}}" -clientSecret "${{env.CLIENT_SECRET}}" -url "${{env.TARGET_ENV_URL}}"
+        .\activate.ps1
