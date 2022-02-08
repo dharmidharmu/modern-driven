@@ -1,10 +1,10 @@
-[System.Net.ServicePointManager]::SecurityProtocol = [System.Net.SecurityProtocolType]::Tls12;
 param(
 [string] $solutionName,
 [string] $clientId,
 [string] $clientSecret,
 [string] $url
 )
+[System.Net.ServicePointManager]::SecurityProtocol = [System.Net.SecurityProtocolType]::Tls12;
 
 $Module = Get-InstalledModule -Name "Microsoft.Xrm.Data.Powershell" -ErrorAction SilentlyContinue -WarningAction SilentlyContinue
 if($Module -ne $null)
