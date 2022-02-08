@@ -1,3 +1,4 @@
+Set-ExecutionPolicy Unrestricted
 $Module = Get-InstalledModule -Name "Microsoft.Xrm.Data.Powershell" -ErrorAction SilentlyContinue -WarningAction SilentlyContinue
 if($Module -ne $null)
 {
@@ -10,7 +11,7 @@ else
     Install-Module -Name Microsoft.Xrm.Data.Powershell -Force 
     Write-host "Module('Microsoft.Xrm.Data.Powershell') is installed successfully....";
 }
-Import-Module Microsoft.Xrm.Data.Powershell;
+
  
 
 #Connection
