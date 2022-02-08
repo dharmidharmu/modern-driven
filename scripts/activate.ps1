@@ -1,8 +1,9 @@
 [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.SecurityProtocolType]::Tls12
-Install-Module Microsoft.Xrm.Data.Powershell -Force -Verbose
-Set-ExecutionPolicy unrestricted -Scope CurrentUser
 
- 
+Get-ExecutionPolicy
+Set-ExecutionPolicy unrestricted -Scope LocalMachine
+Get-ExecutionPolicy
+Install-Module Microsoft.Xrm.Data.Powershell -Force 
 
 #Connection
 #$Conn = Connect-CrmOnline -ConnectionString "AuthType=ClientSecret;Url=${url};Timeout=02:00:00; Domain=; ClientId=${clientId};ClientSecret=${clientSecret}"
