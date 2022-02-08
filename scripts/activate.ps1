@@ -20,7 +20,9 @@ else
  
 
 #Connection
-$Conn = Connect-CrmOnline -ConnectionString "AuthType=ClientSecret;Url=${url};Timeout=02:00:00; Domain=; ClientId=${clientId};ClientSecret=${clientSecret}"
+#$Conn = Connect-CrmOnline -ConnectionString "AuthType=ClientSecret;Url=${url};Timeout=02:00:00; Domain=; ClientId=${clientId};ClientSecret=${clientSecret}"
+$conn = Connect-CrmOnline -ConnectionString "RequireNewInstance=True;Url=${url};AuthType= `
+    ClientSecret;ClientId=${clientId};SkipDiscovery=True;ClientSecret=${clientSecret} -ConnectionTimeoutInSeconds 500 -LogWriteDirectory "C:\temp\"
 
 if($Conn -eq $null){
 
