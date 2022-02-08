@@ -1,0 +1,60 @@
+#Name of Workflow
+name: activateFlow
+
+#Trigger Flow Manually
+on: 
+  workflow_dispatch:
+  
+
+#Source and Destination Envirnoment Details
+env:
+  #envirnoments
+  TARGET_ENV_NAME: Dev
+  TARGET_ENV_URL: ${{ secrets.E2EDEV }}
+  #service principal 
+  APPID: ${{ secrets.APPID }}
+  CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
+  TENANT_ID: ${{ secrets.TENANT_ID }}
+  #soluitons
+  CUSTOMIZATION: MCSE2EProductivityR1Customization
+  TABLES: MCSE2EProductivityR1Tables
+  PROCESS: MCSE2EProductivityR1Process
+  APP: MCSE2EProductivityR1App
+  SECURITY: MCSE2EProductivityR1SecurityRole
+  RIBBONWB: MCSE2EProductivityR1RibbonWb
+  HELPPAGE: MCSE2EProductivityR1HelpPage
+  FLOW: MCSE2EProductivityR1PowerAutomateFlow
+
+
+jobs:
+   #Import Solutions to QA Envirnoment
+  Connection:
+    runs-on: windows-latest
+    env:
+      RUNNER_DEBUG: 1
+    steps:
+      #checkout git repo
+      - uses: actions/checkout@v2
+        with:
+          lfs: true
+      #check the Service Principal Connection Validation
+      - name: Connection-${{env.TARGET_ENV_NAME}}
+        uses: microsoft/powerplatform-actions/who-am-i@v0
+        with:
+          environment-url: ${{env.TARGET_ENV_URL}}
+          app-id: ${{env.APPID}}
+          client-secret: ${{env.CLIENT_SECRET}}
+          tenant-id: ${{env.TENANT_ID}}
+  Activate-Flow:
+    runs-on: windows-latest
+    needs: [Connection]
+    steps:
+     #checkout git repo
+    - uses: actions/checkout@v2
+      with:
+        lfs: true
+    - name: Activate Flow
+      shell: pwsh
+      run: |
+        cd scripts
+        .\activate.ps1 -solutionName "${{env.FLOW}}" -clientId "${{env.APPID}}" -clientSecret "${{env.CLIENT_SECRET}}" -url "${{env.TARGET_ENV_URL}}"
