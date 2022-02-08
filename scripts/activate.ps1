@@ -4,7 +4,6 @@ param(
 [string] $clientSecret,
 [string] $url
 )
-[System.Net.ServicePointManager]::SecurityProtocol = [System.Net.SecurityProtocolType]::Tls12;
 
 $Module = Get-InstalledModule -Name "Microsoft.Xrm.Data.Powershell" -ErrorAction SilentlyContinue -WarningAction SilentlyContinue
 if($Module -ne $null)
@@ -15,7 +14,7 @@ if($Module -ne $null)
 else
 {
     Write-host "Module is not installed,`nInstalling Module('Microsoft.Xrm.Data.Powershell')...";
-    Install-Module -Name Microsoft.Xrm.Data.Powershell -Force -Scope CurrentUser
+    Install-Module -Name Microsoft.Xrm.Data.Powershell -Force 
     Write-host "Module('Microsoft.Xrm.Data.Powershell') is installed successfully....";
 }
  
