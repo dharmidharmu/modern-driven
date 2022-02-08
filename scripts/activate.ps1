@@ -1,16 +1,6 @@
-Set-ExecutionPolicy Unrestricted
-$Module = Get-InstalledModule -Name "Microsoft.Xrm.Data.Powershell" -ErrorAction SilentlyContinue -WarningAction SilentlyContinue
-if($Module -ne $null)
-{
-    Write-host "Module is already installed!!!!, `nModule details:";
-    $Module | Format-Table -Wrap 
- }
-else
-{
-    Write-host "Module is not installed,`nInstalling Module('Microsoft.Xrm.Data.Powershell')...";
-    Install-Module -Name Microsoft.Xrm.Data.Powershell -Force 
-    Write-host "Module('Microsoft.Xrm.Data.Powershell') is installed successfully....";
-}
+[System.Net.ServicePointManager]::SecurityProtocol = [System.Net.SecurityProtocolType]::Tls12
+Install-Module Microsoft.Xrm.Data.Powershell -Force
+Set-ExecutionPolicy unrestricted -Scope CurrentUser
 
  
 
