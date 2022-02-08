@@ -1,5 +1,5 @@
 [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.SecurityProtocolType]::Tls12
-Install-Module Microsoft.Xrm.Data.Powershell -Force
+Install-Module Microsoft.Xrm.Data.Powershell -Force -Verbose
 Set-ExecutionPolicy unrestricted -Scope CurrentUser
 
  
