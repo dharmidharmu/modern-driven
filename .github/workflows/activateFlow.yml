@@ -54,7 +54,6 @@ jobs:
       with:
         lfs: true
     - name: Activate Flow
-      shell: pwsh
       run: |
         cd scripts
         .\activate.ps1
