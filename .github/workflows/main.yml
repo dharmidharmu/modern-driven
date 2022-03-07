@@ -1,0 +1,26 @@
+name: pocOnPatch
+# Export solution from DEV environment
+#  unpack it and prepare, commit and push a git branch with the changes
+
+on:
+  workflow_dispatch:
+  
+jobs:
+  copy-file:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Pushes test file
+      uses: dmnemec/copy_file_to_another_repo_action@main
+      env:
+        API_TOKEN_GITHUB: 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
+      with:
+        source_file: drop
+        destination_repo: 'dharmidharmu/webappdemo'
+        destination_folder: 'drop/fromanotherrepo'
+        user_email: 'PAT@email.com'
+        user_name: 'PAT'
+        commit_message: 'A custom message for the commit'
+ 
