@@ -17,7 +17,7 @@ jobs:
       env:
         API_TOKEN_GITHUB: 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
       with:
-        source_file: drop
+        source_file: 'drop'
         destination_repo: 'dharmidharmu/webappdemo'
         destination_folder: 'drop/fromanotherrepo'
         user_email: 'PAT@email.com'
