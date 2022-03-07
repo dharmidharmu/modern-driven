@@ -15,7 +15,7 @@ jobs:
     - name: Pushes test file
       uses: dmnemec/copy_file_to_another_repo_action@main
       env:
-        API_TOKEN_GITHUB: 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
+        API_TOKEN_GITHUB: ${{ secrets.PAT }}
       with:
         source_file: 'drop'
         destination_repo: 'dharmidharmu/webappdemo'
