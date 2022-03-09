@@ -17,7 +17,7 @@ jobs:
       env:
         API_TOKEN_GITHUB: ${{ secrets.PAT }}
       with:
-        source_file: 'drop/2022-02-07'
+        source_file: 'drop/2022-02-08'
         destination_repo: 'dharmidharmu/webappdemo'
         destination_folder: 'E2E'
         user_email: 'dharmeshwaran29@gmail.com'
